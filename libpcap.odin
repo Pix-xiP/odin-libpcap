@@ -177,291 +177,200 @@ bpf_program :: struct {
 
 pcap_options :: struct {} // TODO: Track down a definition for this..
 
-@(default_calling_convention = "c")
+@(default_calling_convention = "c", link_prefix = "pcap_")
 foreign libpcap {
+	init :: proc(opts: _c.uint, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_init")
-	pcap_init :: proc(opts: _c.uint, errbuf: [^]byte) -> _c.int ---
+	// DEPRECATED use findalldevs instead
+	lookupdev :: proc(errbuf: [^]byte) -> cstring ---
 
-	@(link_name = "pcap_lookupdev") // DEPRECATED use pcap_findalldevs instead
-	pcap_lookupdev :: proc(errbuf: [^]byte) -> cstring ---
+	lookupnet :: proc(device: cstring, netp: ^bpf_u_int32, maskp: ^bpf_u_int32, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_lookupnet")
-	pcap_lookupnet :: proc(device: cstring, netp: ^bpf_u_int32, maskp: ^bpf_u_int32, errbuf: [^]byte) -> _c.int ---
+	create :: proc(source: cstring, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_create")
-	pcap_create :: proc(source: cstring, errbuf: [^]byte) -> ^pcap_t ---
+	set_snaplen :: proc(p: ^pcap_t, snaplen: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_snaplen")
-	pcap_set_snaplen :: proc(p: ^pcap_t, snaplen: _c.int) -> _c.int ---
+	set_promisc :: proc(p: ^pcap_t, promisc: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_promisc")
-	pcap_set_promisc :: proc(p: ^pcap_t, promisc: _c.int) -> _c.int ---
+	can_set_rfmon :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_can_set_rfmon")
-	pcap_can_set_rfmon :: proc(p: ^pcap_t) -> _c.int ---
+	set_rfmon :: proc(p: ^pcap_t, rfmon: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_rfmon")
-	pcap_set_rfmon :: proc(p: ^pcap_t, rfmon: _c.int) -> _c.int ---
+	set_timeout :: proc(p: ^pcap_t, to_ms: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_timeout")
-	pcap_set_timeout :: proc(p: ^pcap_t, to_ms: _c.int) -> _c.int ---
+	set_tstamp_type :: proc(p: ^pcap_t, tstamp_type: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_tstamp_type")
-	pcap_set_tstamp_type :: proc(p: ^pcap_t, tstamp_type: _c.int) -> _c.int ---
+	set_immediate_mode :: proc(p: ^pcap_t, immediate_mode: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_immediate_mode")
-	pcap_set_immediate_mode :: proc(p: ^pcap_t, immediate_mode: _c.int) -> _c.int ---
+	set_buffer_size :: proc(p: ^pcap_t, buffer_size: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_buffer_size")
-	pcap_set_buffer_size :: proc(p: ^pcap_t, buffer_size: _c.int) -> _c.int ---
+	set_tstamp_precision :: proc(p: ^pcap_t, tstamp_precision: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_set_tstamp_precision")
-	pcap_set_tstamp_precision :: proc(p: ^pcap_t, tstamp_precision: _c.int) -> _c.int ---
+	get_tstamp_precision :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_get_tstamp_precision")
-	pcap_get_tstamp_precision :: proc(p: ^pcap_t) -> _c.int ---
+	activate :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_activate")
-	pcap_activate :: proc(p: ^pcap_t) -> _c.int ---
+	list_tstamp_types :: proc(p: ^pcap_t, tstamp_typesp: ^^_c.int) -> _c.int ---
 
-	@(link_name = "pcap_list_tstamp_types")
-	pcap_list_tstamp_types :: proc(p: ^pcap_t, tstamp_typesp: ^^_c.int) -> _c.int ---
+	free_tstamp_types :: proc(tstamp_types: ^_c.int) ---
 
-	@(link_name = "pcap_free_tstamp_types")
-	pcap_free_tstamp_types :: proc(tstamp_types: ^_c.int) ---
+	tstamp_type_name_to_val :: proc(name: cstring) -> _c.int ---
 
-	@(link_name = "pcap_tstamp_type_name_to_val")
-	pcap_tstamp_type_name_to_val :: proc(name: cstring) -> _c.int ---
+	tstamp_type_val_to_name :: proc(tstamp_type: _c.int) -> cstring ---
 
-	@(link_name = "pcap_tstamp_type_val_to_name")
-	pcap_tstamp_type_val_to_name :: proc(tstamp_type: _c.int) -> cstring ---
+	tstamp_type_val_to_description :: proc(tstamp_type: _c.int) -> cstring ---
 
-	@(link_name = "pcap_tstamp_type_val_to_description")
-	pcap_tstamp_type_val_to_description :: proc(tstamp_type: _c.int) -> cstring ---
+	open_live :: proc(device: cstring, snaplen: _c.int, promisc: b32, to_ms: _c.int, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_open_live")
-	pcap_open_live :: proc(device: cstring, snaplen: _c.int, promisc: b32, to_ms: _c.int, errbuf: [^]byte) -> ^pcap_t ---
+	open_dead :: proc(linktype: _c.int, snaplen: _c.int) -> ^pcap_t ---
 
-	@(link_name = "pcap_open_dead")
-	pcap_open_dead :: proc(linktype: _c.int, snaplen: _c.int) -> ^pcap_t ---
+	open_dead_with_tstamp_precision :: proc(linktype: _c.int, snaplen: _c.int, precision: _c.uint32_t) -> ^pcap_t ---
 
-	@(link_name = "pcap_open_dead_with_tstamp_precision")
-	pcap_open_dead_with_tstamp_precision :: proc(linktype: _c.int, snaplen: _c.int, precision: _c.uint32_t) -> ^pcap_t ---
+	open_offline_with_tstamp_precision :: proc(savefile: cstring, precision: _c.uint32_t, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_open_offline_with_tstamp_precision")
-	pcap_open_offline_with_tstamp_precision :: proc(savefile: cstring, precision: _c.uint32_t, errbuf: [^]byte) -> ^pcap_t ---
+	open_offline :: proc(savefile: cstring, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_open_offline")
-	pcap_open_offline :: proc(savefile: cstring, errbuf: [^]byte) -> ^pcap_t ---
+	fopen_offline_with_tstamp_precision :: proc(fp: ^libc.FILE, precision: _c.uint32_t, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_fopen_offline_with_tstamp_precision")
-	pcap_fopen_offline_with_tstamp_precision :: proc(fp: ^libc.FILE, precision: _c.uint32_t, errbuf: [^]byte) -> ^pcap_t ---
+	fopen_offline :: proc(fp: ^libc.FILE, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_fopen_offline")
-	pcap_fopen_offline :: proc(fp: ^libc.FILE, errbuf: [^]byte) -> ^pcap_t ---
+	close :: proc(p: ^pcap_t) ---
 
-	@(link_name = "pcap_close")
-	pcap_close :: proc(p: ^pcap_t) ---
+	loop :: proc(p: ^pcap_t, count: _c.int, callback: pcap_handler, user: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_loop")
-	pcap_loop :: proc(p: ^pcap_t, count: _c.int, callback: pcap_handler, user: [^]byte) -> _c.int ---
+	dispatch :: proc(p: ^pcap_t, count: _c.int, callback: pcap_handler, user: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_dispatch")
-	pcap_dispatch :: proc(p: ^pcap_t, count: _c.int, callback: pcap_handler, user: [^]byte) -> _c.int ---
+	next :: proc(p: ^pcap_t, pkt_hdr: ^pcap_pkthdr) -> ^[^]byte ---
 
-	@(link_name = "pcap_next")
-	pcap_next :: proc(p: ^pcap_t, pkt_hdr: ^pcap_pkthdr) -> ^[^]byte ---
+	next_ex :: proc(p: ^pcap_t, pkt_hdr: ^^pcap_pkthdr, pkt_data: ^[^]byte) -> _c.int ---
 
-	@(link_name = "pcap_next_ex")
-	pcap_next_ex :: proc(p: ^pcap_t, pkt_hdr: ^^pcap_pkthdr, pkt_data: ^[^]byte) -> _c.int ---
+	breakloop :: proc(p: ^pcap_t) ---
 
-	@(link_name = "pcap_breakloop")
-	pcap_breakloop :: proc(p: ^pcap_t) ---
+	stats :: proc(p: ^pcap_t, ps: ^pcap_stat) -> _c.int ---
 
-	@(link_name = "pcap_stats")
-	pcap_stats :: proc(p: ^pcap_t, ps: ^pcap_stat) -> _c.int ---
+	setfilter :: proc(p: ^pcap_t, fp: ^bpf_program) -> _c.int ---
 
-	@(link_name = "pcap_setfilter")
-	pcap_setfilter :: proc(p: ^pcap_t, fp: ^bpf_program) -> _c.int ---
+	setdirection :: proc(p: ^pcap_t, direction: pcap_direction_t) -> _c.int ---
 
-	@(link_name = "pcap_setdirection")
-	pcap_setdirection :: proc(p: ^pcap_t, direction: pcap_direction_t) -> _c.int ---
+	getnonblock :: proc(p: ^pcap_t, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_getnonblock")
-	pcap_getnonblock :: proc(p: ^pcap_t, errbuf: [^]byte) -> _c.int ---
+	setnonblock :: proc(p: ^pcap_t, nonblock: _c.int, errbuf: [^]byte) -> _c.int ---
+	// NOTE: rawptr might actually need to be [^]byte same as sendpacket
+	inject :: proc(p: ^pcap_t, buf: rawptr, size: _c.size_t) -> _c.int ---
 
-	@(link_name = "pcap_setnonblock")
-	pcap_setnonblock :: proc(p: ^pcap_t, nonblock: _c.int, errbuf: [^]byte) -> _c.int ---
+	sendpacket :: proc(p: ^pcap_t, buf: [^]byte, size: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_inject") // NOTE: rawptr might actually need to be [^]byte same as pcap_sendpacket
-	pcap_inject :: proc(p: ^pcap_t, buf: rawptr, size: _c.size_t) -> _c.int ---
+	statustostr :: proc(error: _c.int) -> cstring ---
 
-	@(link_name = "pcap_sendpacket")
-	pcap_sendpacket :: proc(p: ^pcap_t, buf: [^]byte, size: _c.int) -> _c.int ---
+	strerror :: proc(error: _c.int) -> cstring ---
 
-	@(link_name = "pcap_statustostr")
-	pcap_statustostr :: proc(error: _c.int) -> cstring ---
+	geterr :: proc(p: ^pcap_t) -> cstring ---
 
-	@(link_name = "pcap_strerror")
-	pcap_strerror :: proc(error: _c.int) -> cstring ---
+	perror :: proc(p: ^pcap_t, prefix: cstring) ---
 
-	@(link_name = "pcap_geterr")
-	pcap_geterr :: proc(p: ^pcap_t) -> cstring ---
+	compile :: proc(p: ^pcap_t, fp: ^bpf_program, str: cstring, optimize: _c.int, netmask: bpf_u_int32) -> _c.int ---
+	//  // Deprecated completely
+	// compile_nopcap :: proc(: _c.int, unamed1: _c.int, unamed2: ^bpf_program, unamed3: cstring, unamed4: _c.int, unamed5: bpf_u_int32) -> _c.int ---
 
-	@(link_name = "pcap_perror")
-	pcap_perror :: proc(p: ^pcap_t, prefix: cstring) ---
+	freecode :: proc(ptr: ^bpf_program) ---
 
-	@(link_name = "pcap_compile")
-	pcap_compile :: proc(p: ^pcap_t, fp: ^bpf_program, str: cstring, optimize: _c.int, netmask: bpf_u_int32) -> _c.int ---
+	offline_filter :: proc(fp: ^bpf_program, hdr: ^pcap_pkthdr, pkg: [^]byte) -> _c.int ---
 
-	// @(link_name = "pcap_compile_nopcap") // Deprecated completely
-	// pcap_compile_nopcap :: proc(: _c.int, unamed1: _c.int, unamed2: ^bpf_program, unamed3: cstring, unamed4: _c.int, unamed5: bpf_u_int32) -> _c.int ---
+	datalink :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_freecode")
-	pcap_freecode :: proc(ptr: ^bpf_program) ---
+	datalink_ext :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_offline_filter")
-	pcap_offline_filter :: proc(fp: ^bpf_program, hdr: ^pcap_pkthdr, pkg: [^]byte) -> _c.int ---
+	list_datalinks :: proc(p: ^pcap_t, dtlist_buf: ^^_c.int) -> _c.int ---
 
-	@(link_name = "pcap_datalink")
-	pcap_datalink :: proc(p: ^pcap_t) -> _c.int ---
+	set_datalink :: proc(p: ^pcap_t, datalink: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_datalink_ext")
-	pcap_datalink_ext :: proc(p: ^pcap_t) -> _c.int ---
+	free_datalinks :: proc(dlt_list: ^_c.int) ---
 
-	@(link_name = "pcap_list_datalinks")
-	pcap_list_datalinks :: proc(p: ^pcap_t, dtlist_buf: ^^_c.int) -> _c.int ---
+	datalink_name_to_val :: proc(name: cstring) -> _c.int ---
 
-	@(link_name = "pcap_set_datalink")
-	pcap_set_datalink :: proc(p: ^pcap_t, datalink: _c.int) -> _c.int ---
+	datalink_val_to_name :: proc(value: _c.int) -> cstring ---
 
-	@(link_name = "pcap_free_datalinks")
-	pcap_free_datalinks :: proc(dlt_list: ^_c.int) ---
+	datalink_val_to_description :: proc(value: _c.int) -> cstring ---
 
-	@(link_name = "pcap_datalink_name_to_val")
-	pcap_datalink_name_to_val :: proc(name: cstring) -> _c.int ---
+	datalink_val_to_description_or_dlt :: proc(value: _c.int) -> cstring ---
 
-	@(link_name = "pcap_datalink_val_to_name")
-	pcap_datalink_val_to_name :: proc(value: _c.int) -> cstring ---
+	snapshot :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_datalink_val_to_description")
-	pcap_datalink_val_to_description :: proc(value: _c.int) -> cstring ---
+	is_swapped :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_datalink_val_to_description_or_dlt")
-	pcap_datalink_val_to_description_or_dlt :: proc(value: _c.int) -> cstring ---
+	major_version :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_snapshot")
-	pcap_snapshot :: proc(p: ^pcap_t) -> _c.int ---
+	minor_version :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_is_swapped")
-	pcap_is_swapped :: proc(p: ^pcap_t) -> _c.int ---
+	bufsize :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_major_version")
-	pcap_major_version :: proc(p: ^pcap_t) -> _c.int ---
+	file :: proc(p: ^pcap_t) -> ^libc.FILE ---
 
-	@(link_name = "pcap_minor_version")
-	pcap_minor_version :: proc(p: ^pcap_t) -> _c.int ---
+	fileno :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_bufsize")
-	pcap_bufsize :: proc(p: ^pcap_t) -> _c.int ---
+	dump_open :: proc(p: ^pcap_t, fname: cstring) -> ^pcap_dumper_t ---
 
-	@(link_name = "pcap_file")
-	pcap_file :: proc(p: ^pcap_t) -> ^libc.FILE ---
+	dump_fopen :: proc(p: ^pcap_t, fp: ^libc.FILE) -> ^pcap_dumper_t ---
 
-	@(link_name = "pcap_fileno")
-	pcap_fileno :: proc(p: ^pcap_t) -> _c.int ---
+	dump_open_append :: proc(p: ^pcap_t, fname: cstring) -> ^pcap_dumper_t ---
 
-	@(link_name = "pcap_dump_open")
-	pcap_dump_open :: proc(p: ^pcap_t, fname: cstring) -> ^pcap_dumper_t ---
+	dump_file :: proc(p: ^pcap_dumper_t) -> ^libc.FILE ---
 
-	@(link_name = "pcap_dump_fopen")
-	pcap_dump_fopen :: proc(p: ^pcap_t, fp: ^libc.FILE) -> ^pcap_dumper_t ---
+	dump_ftell :: proc(p: ^pcap_dumper_t) -> _c.long ---
 
-	@(link_name = "pcap_dump_open_append")
-	pcap_dump_open_append :: proc(p: ^pcap_t, fname: cstring) -> ^pcap_dumper_t ---
+	dump_ftell64 :: proc(p: ^pcap_dumper_t) -> i64 ---
 
-	@(link_name = "pcap_dump_file")
-	pcap_dump_file :: proc(p: ^pcap_dumper_t) -> ^libc.FILE ---
+	dump_flush :: proc(p: ^pcap_dumper_t) -> _c.int ---
 
-	@(link_name = "pcap_dump_ftell")
-	pcap_dump_ftell :: proc(p: ^pcap_dumper_t) -> _c.long ---
+	dump_close :: proc(p: ^pcap_dumper_t) ---
 
-	@(link_name = "pcap_dump_ftell64")
-	pcap_dump_ftell64 :: proc(p: ^pcap_dumper_t) -> i64 ---
+	dump :: proc(user: [^]byte, hdr: ^pcap_pkthdr, sp: [^]byte) ---
 
-	@(link_name = "pcap_dump_flush")
-	pcap_dump_flush :: proc(p: ^pcap_dumper_t) -> _c.int ---
+	findalldevs :: proc(alldevs_ptr: ^^pcap_if_t, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_dump_close")
-	pcap_dump_close :: proc(p: ^pcap_dumper_t) ---
+	freealldevs :: proc(alldevs: ^pcap_if_t) ---
 
-	@(link_name = "pcap_dump")
-	pcap_dump :: proc(user: [^]byte, hdr: ^pcap_pkthdr, sp: [^]byte) ---
+	lib_version :: proc() -> cstring ---
 
-	@(link_name = "pcap_findalldevs")
-	pcap_findalldevs :: proc(alldevs_ptr: ^^pcap_if_t, errbuf: [^]byte) -> _c.int ---
+	get_selectable_fd :: proc(p: ^pcap_t) -> _c.int ---
 
-	@(link_name = "pcap_freealldevs")
-	pcap_freealldevs :: proc(alldevs: ^pcap_if_t) ---
+	get_required_select_timeout :: proc(p: ^pcap_t) -> ^timeval ---
 
-	@(link_name = "pcap_lib_version")
-	pcap_lib_version :: proc() -> cstring ---
+	open :: proc(source: cstring, snaplen: _c.int, flags: _c.int, read_timeout: _c.int, auth: ^pcap_rmtauth, errbuf: [^]byte) -> ^pcap_t ---
 
-	@(link_name = "pcap_get_selectable_fd")
-	pcap_get_selectable_fd :: proc(p: ^pcap_t) -> _c.int ---
+	createsrcstr :: proc(source: cstring, type: _c.int, host: cstring, port: cstring, name: cstring, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_get_required_select_timeout")
-	pcap_get_required_select_timeout :: proc(p: ^pcap_t) -> ^timeval ---
+	parsesrcstr :: proc(source: cstring, type: ^_c.int, host: cstring, port: cstring, name: cstring, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_open")
-	pcap_open :: proc(source: cstring, snaplen: _c.int, flags: _c.int, read_timeout: _c.int, auth: ^pcap_rmtauth, errbuf: [^]byte) -> ^pcap_t ---
+	findalldevs_ex :: proc(source: cstring, auth: ^pcap_rmtauth, alldevs: ^^pcap_if_t, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_createsrcstr")
-	pcap_createsrcstr :: proc(source: cstring, type: _c.int, host: cstring, port: cstring, name: cstring, errbuf: [^]byte) -> _c.int ---
+	setsampling :: proc(p: ^pcap_t) -> ^pcap_samp ---
 
-	@(link_name = "pcap_parsesrcstr")
-	pcap_parsesrcstr :: proc(source: cstring, type: ^_c.int, host: cstring, port: cstring, name: cstring, errbuf: [^]byte) -> _c.int ---
+	//	remoteact_accept :: proc(address: cstring, port: cstring, hostlist: cstring, connectinghost: cstring, auth: ^pcap_rmtauth, errbuf: [^]byte) -> SOCKET ---
+	//	
+	//	remoteact_accept_ex :: proc(address: cstring, port: cstring, hostlist: cstring, connectinghost: cstring, auth: ^pcap_rmtauth, uses_ssl: _c.int, errbuf: [^]byte) -> SOCKET ---
 
-	@(link_name = "pcap_findalldevs_ex")
-	pcap_findalldevs_ex :: proc(source: cstring, auth: ^pcap_rmtauth, alldevs: ^^pcap_if_t, errbuf: [^]byte) -> _c.int ---
+	remoteact_list :: proc(hostlist: cstring, sep: _c.char, size: _c.int, errbuf: [^]byte) -> _c.int ---
 
-	@(link_name = "pcap_setsampling")
-	pcap_setsampling :: proc(p: ^pcap_t) -> ^pcap_samp ---
+	remoteact_close :: proc(host: cstring, errbuf: [^]byte) -> _c.int ---
 
-	//	@(link_name = "pcap_remoteact_accept")
-	//	pcap_remoteact_accept :: proc(address: cstring, port: cstring, hostlist: cstring, connectinghost: cstring, auth: ^pcap_rmtauth, errbuf: [^]byte) -> SOCKET ---
-	//
-	//	@(link_name = "pcap_remoteact_accept_ex")
-	//	pcap_remoteact_accept_ex :: proc(address: cstring, port: cstring, hostlist: cstring, connectinghost: cstring, auth: ^pcap_rmtauth, uses_ssl: _c.int, errbuf: [^]byte) -> SOCKET ---
+	remoteact_cleanup :: proc() ---
 
-	@(link_name = "pcap_remoteact_list")
-	pcap_remoteact_list :: proc(hostlist: cstring, sep: _c.char, size: _c.int, errbuf: [^]byte) -> _c.int ---
+	alloc_option :: proc() -> ^pcap_options ---
 
-	@(link_name = "pcap_remoteact_close")
-	pcap_remoteact_close :: proc(host: cstring, errbuf: [^]byte) -> _c.int ---
+	free_option :: proc(po: ^pcap_options) ---
 
-	@(link_name = "pcap_remoteact_cleanup")
-	pcap_remoteact_cleanup :: proc() ---
+	set_option_string :: proc(po: ^pcap_options, pon: pcap_option_name, value: cstring) -> _c.int ---
 
-	@(link_name = "pcap_alloc_option")
-	pcap_alloc_option :: proc() -> ^pcap_options ---
+	set_option_int :: proc(po: ^pcap_options, pon: pcap_option_name, value: _c.int) -> _c.int ---
 
-	@(link_name = "pcap_free_option")
-	pcap_free_option :: proc(po: ^pcap_options) ---
+	get_option_string :: proc(po: ^pcap_options, pon: pcap_option_name) -> cstring ---
 
-	@(link_name = "pcap_set_option_string")
-	pcap_set_option_string :: proc(po: ^pcap_options, pon: pcap_option_name, value: cstring) -> _c.int ---
+	get_option_int :: proc(po: ^pcap_options, pon: pcap_option_name) -> _c.int ---
+}
 
-	@(link_name = "pcap_set_option_int")
-	pcap_set_option_int :: proc(po: ^pcap_options, pon: pcap_option_name, value: _c.int) -> _c.int ---
-
-	@(link_name = "pcap_get_option_string")
-	pcap_get_option_string :: proc(po: ^pcap_options, pon: pcap_option_name) -> cstring ---
-
-	@(link_name = "pcap_get_option_int")
-	pcap_get_option_int :: proc(po: ^pcap_options, pon: pcap_option_name) -> _c.int ---
-
+@(default_calling_convention = "c")
+foreign _ {
 	@(link_name = "bpf_filter")
 	bpf_filter :: proc(pc: ^bpf_insn, pkt: [^]byte, wirelen: _c.uint32_t, buflen: _c.uint32_t) -> _c.uint32_t ---
 
