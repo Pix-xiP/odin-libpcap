@@ -1,4 +1,5 @@
 libpcap.A.dylib
+tests/tests
 odin-libpcap
 **.o
 

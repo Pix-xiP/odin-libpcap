@@ -1,5 +1,7 @@
 package odin_libpcap
 
+import "core:os"
+
 // TODO: Add a when for each system - Linux, Windows etc.
 when ODIN_OS == .Windows {
 	foreign import libpcap "system:npcap" // 99% sure this is wrong, but placeholder
@@ -79,10 +81,10 @@ PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE :: 0x00000030 // not applicable
 // Representation of an interface address
 pcap_addr :: struct {
 	next:      ^pcap_addr,
-	addr:      ^sockaddr,
-	netmask:   ^sockaddr,
-	broadaddr: ^sockaddr,
-	dstaddr:   ^sockaddr,
+	addr:      ^os.SOCKADDR,
+	netmask:   ^os.SOCKADDR,
+	broadaddr: ^os.SOCKADDR,
+	dstaddr:   ^os.SOCKADDR,
 }
 
 // Error codes for PCAP API 
@@ -148,8 +150,6 @@ pcap_stat :: struct {
 // }
 
 // TODO: MSDOS - PCAP_STATS_EX
-
-sockaddr :: struct {}
 
 pcap_rmtauth :: struct {
 	type:     _c.int,
