@@ -1,6 +1,8 @@
 package odin_libpcap
 
 import "core:os"
+import _c "core:c"
+import "core:c/libc"
 
 // TODO: Add a when for each system - Linux, Windows etc.
 when ODIN_OS == .Windows {
@@ -13,9 +15,6 @@ when ODIN_OS == .Darwin {
 	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
 	foreign import libpcap "system:libpcap.A.dylib"
 }
-
-import _c "core:c"
-import "core:c/libc"
 
 #assert(size_of(b32) == size_of(_c.int)) // To Use later maybe for wrappers!
 
@@ -105,12 +104,33 @@ PCAP_ERROR_CANTSET_TSTAMP_TYPE :: -10 // this device doesn't support setting the
 PCAP_ERROR_PROMISC_PERM_DENIED :: -11 // you don't have permission to capture in promiscuous mode 
 PCAP_ERROR_TSTAMP_PRECISION_NOTSUP :: -12 // the requested time stamp precision is not supported 
 
+PCAP_ERRORS :: enum {
+	GENERIC_ERROR           = -1, // generic error code 
+	BREAK                   = -2, // loop terminated by pcap_breakloop 
+	NOT_ACTIVATED           = -3, // the capture needs to be activated 
+	ACTIVATED               = -4, // the operation can't be performed on already activated captures 
+	NO_SUCH_DEVICE          = -5, // no such device exists 
+	RFMON_NOTSUP            = -6, // this device doesn't support rfmon (monitor) mode 
+	NOT_RFMON               = -7, // operation supported only in monitor mode 
+	PERM_DENIED             = -8, // no permission to open the device 
+	IFACE_NOT_UP            = -9, // interface isn't up 
+	CANTSET_TSTAMP_TYPE     = -10, // this device doesn't support setting the time stamp type 
+	PROMISC_PERM_DENIED     = -11, // you don't have permission to capture in promiscuous mode 
+	TSTAMP_PRECISION_NOTSUP = -12, // the requested time stamp precision is not supported 
+}
+
 // Warning codes for PCAP API 
 // Warnings are positive so as not to clash with errors...
 // TODO: Enum this 
 PCAP_WARNING :: 1 // Generic warning code 
 PCAP_WARNING_PROMISC_NOTSUP :: 2 // device doesn't support promisc mode 
 PCAP_WARNING_TSTAMP_TYPE_NOTSUP :: 3 // timestype type is not supported
+
+WARNING :: enum {
+	GENERIC_WARNING    = 1,
+	PROMISC_NOTSUP     = 2,
+	TSTAMP_TYPE_NOTSUP = 3,
+}
 
 // Value to pass to pcap_compile() as the netmask if you don't 
 // know what the netmask it!
@@ -136,18 +156,51 @@ pcap_pkthdr :: struct {
 	len:    bpf_u_int32,
 }
 
-pcap_stat :: struct {
-	ps_recv:   _c.uint32_t,
-	ps_drop:   _c.uint32_t,
-	ps_ifdrop: _c.uint32_t,
-}
+when ODIN_OS == .Windows {
+	pcap_stat :: struct {
+		ps_recv:    _c.uint32_t,
+		ps_drop:    _c.uint32_t,
+		ps_ifdrop:  _c.uint32_t,
+		ps_capt:    _c.uint32_t,
+		ps_sent:    _c.uint32_t,
+		ps_netdrop: _c.uint32_t,
+	}
+	// MSDOS pcap_stat_ex
+	pcap_stat_ex :: struct {
+		rx_packets:          _c.ulong, // total packets received
+		tx_packets:          _c.ulong, // total packets transmitted    
+		rx_bytes:            _c.ulong, // total bytes received         
+		tx_bytes:            _c.ulong, // total bytes transmitted      
+		rx_errors:           _c.ulong, // bad packets received         
+		tx_errors:           _c.ulong, // packet transmit problems     
+		rx_dropped:          _c.ulong, // no space in Rx buffers       
+		tx_dropped:          _c.ulong, // no space available for Tx    
+		multicast:           _c.ulong, // multicast packets received   
+		collisions:          _c.ulong,
 
-// TODO: When Windows:
-// pcap_stat :: struct {
-//  ps_capt: _c.uint32_t,
-//  ps_sent: _c.uint32_t,
-//  ps_netdrop: _c.uint32_t,
-// }
+		// detailed rx_errors: 
+		rx_length_errors:    _c.ulong,
+		rx_over_errors:      _c.ulong, // receiver ring buff overflow  
+		rx_crc_errors:       _c.ulong, // recv'd pkt with crc error    
+		rx_frame_errors:     _c.ulong, // recv'd frame alignment error 
+		rx_fifo_errors:      _c.ulong, // recv'r fifo overrun          
+		rx_missed_errors:    _c.ulong, // recv'r missed packet         
+
+		// detailed tx_errors 
+		tx_aborted_errors:   _c.ulong,
+		tx_carrier_errors:   _c.ulong,
+		tx_fifo_errors:      _c.ulong,
+		tx_heartbeat_errors: _c.ulong,
+		tx_window_errors:    _c.ulong,
+	}
+} else {
+	pcap_stat :: struct {
+		ps_recv:   _c.uint32_t,
+		ps_drop:   _c.uint32_t,
+		ps_ifdrop: _c.uint32_t,
+	}
+
+}
 
 // TODO: MSDOS - PCAP_STATS_EX
 
