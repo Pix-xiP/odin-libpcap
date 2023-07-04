@@ -6,6 +6,7 @@ import "core:c/libc"
 
 // TODO: Add a when for each system - Linux, Windows etc.
 when ODIN_OS == .Windows {
+	// WinPcap, NPcap are the options here.
 	foreign import libpcap "system:npcap" // 99% sure this is wrong, but placeholder
 }
 when ODIN_OS == .Linux {
@@ -20,8 +21,6 @@ when ODIN_OS == .Darwin {
 
 PCAP_ERRBUF_SIZE :: 256
 
-bpf_int32 :: _c.int32_t
-bpf_u_int32 :: _c.uint32_t
 pcap_t :: pcap
 pcap_dumper_t :: pcap_dumper
 pcap_if_t :: pcap_if
@@ -53,9 +52,9 @@ pcap_option_name :: enum i32 {
 	PON_IO_WRITE_PLUGIN  = 3,
 }
 
-pcap :: struct {} // Opaque Structure... How to handle... TODO:
+pcap :: struct {} // "C.incomplete_type" - opaque data type.. #JustCThings
 
-pcap_dumper :: struct {} // TODO: Define PCAP DUMPER
+pcap_dumper :: struct {} // "C.incomplete_type" - Believe its just a FILE * under the hood?
 
 // Interface List Item
 pcap_if :: struct {
@@ -89,8 +88,6 @@ pcap_addr :: struct {
 // Error codes for PCAP API 
 // All negative cause #C things, success or fail on calls.
 // check if return < 0 
-// TODO: Turn this into an Enum or Error
-
 PCAP_ERROR :: -1 // generic error code 
 PCAP_ERROR_BREAK :: -2 // loop terminated by pcap_breakloop 
 PCAP_ERROR_NOT_ACTIVATED :: -3 // the capture needs to be activated 
@@ -121,7 +118,6 @@ PCAP_ERRORS :: enum {
 
 // Warning codes for PCAP API 
 // Warnings are positive so as not to clash with errors...
-// TODO: Enum this 
 PCAP_WARNING :: 1 // Generic warning code 
 PCAP_WARNING_PROMISC_NOTSUP :: 2 // device doesn't support promisc mode 
 PCAP_WARNING_TSTAMP_TYPE_NOTSUP :: 3 // timestype type is not supported
@@ -143,7 +139,6 @@ PCAP_NETMASK_UNKNOWN :: 0xFFFFFFFF
 PCAP_CHAR_ENC_LOCAL: u32 : 0x00000000 // strings are in the local character encoding 
 PCAP_CHAR_ENC_UTF_8: u32 : 0x00000001 // strings are in UTF-8
 PCAP_MMAP_32BIT: u32 : 0x00000002 // map packet buffers with 32-bit addresses
-
 
 timeval :: struct {
 	tv_sec:  _c.long,
@@ -199,10 +194,7 @@ when ODIN_OS == .Windows {
 		ps_drop:   _c.uint32_t,
 		ps_ifdrop: _c.uint32_t,
 	}
-
 }
-
-// TODO: MSDOS - PCAP_STATS_EX
 
 pcap_rmtauth :: struct {
 	type:     _c.int,
@@ -215,20 +207,7 @@ pcap_samp :: struct {
 	value:  _c.int,
 }
 
-// TODO: Check.
-bpf_insn :: struct {
-	code: _c.ushort,
-	jt:   _c.uchar,
-	jf:   _c.uchar,
-	k:    bpf_u_int32,
-}
-
-bpf_program :: struct {
-	bf_len:   _c.uint32_t,
-	bf_insns: ^bpf_insn,
-}
-
-pcap_options :: struct {} // TODO: Track down a definition for this..
+pcap_options :: struct {} // "C.incomplete_type" 
 
 @(default_calling_convention = "c", link_prefix = "pcap_")
 foreign libpcap {
@@ -422,6 +401,7 @@ foreign libpcap {
 	get_option_int :: proc(po: ^pcap_options, pon: pcap_option_name) -> _c.int ---
 }
 
+// TODO: Move to its own file, might as well one to one the entire library
 @(default_calling_convention = "c")
 foreign _ {
 	@(link_name = "bpf_filter")
