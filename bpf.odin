@@ -2,6 +2,18 @@ package odin_libpcap
 
 import _c "core:c"
 
+when ODIN_OS == .Windows {
+	// WinPcap, NPcap are the options here.
+	foreign import bpf "system:npcap" // 99% sure this is wrong, but placeholder
+}
+when ODIN_OS == .Linux {
+	foreign import bpf "libpcap" // TODO: Put on a linux VM and check if .a needed
+}
+when ODIN_OS == .Darwin {
+	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
+	foreign import bpf "system:libpcap.A.dylib"
+}
+
 BPF_RELEASE :: 199606 // BSD style release dat.
 
 when ODIN_OS == .Windows {
@@ -14,6 +26,7 @@ when ODIN_OS == .Windows {
 
 BPF_ALIGNMENT :: size_of(i64) // Double check could be long 32.
 
+// for NETBSD use size of bpf_int32
 BPF_WORDALIGN :: proc(x: uint) { 	// MACRO - May want to take another look
 	var := ((x) + BPF_ALIGNMENT - 1) &~ (BPF_ALIGNMENT - 1)
 	// I THINK this is just rounding to the next multiple of sizeof(lone)
@@ -33,6 +46,14 @@ bpf_insn :: struct {
 	k:    bpf_u_int32,
 }
 
+@(default_calling_convention = "c", link_prefix = "bpf_")
+foreign bpf {
+	filter :: proc(pc: ^bpf_insn, pkt: [^]byte, wirelen: _c.uint32_t, buflen: _c.uint32_t) -> _c.uint32_t ---
+	validate :: proc(fcode: ^bpf_insn, flen: _c.int) -> _c.int ---
+	image :: proc(pc: ^bpf_insn, arg: _c.int) -> cstring ---
+	// Needs to be tagged cause clash with pcap_dump. 
+	bpf_dump :: proc(p: ^bpf_program, arg: _c.int) ---
+}
 
 // The upper 8 bits of the opcode aren't used. BSD/OS used 0x8000.
 
