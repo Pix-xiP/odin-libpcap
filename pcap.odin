@@ -400,19 +400,3 @@ foreign libpcap {
 
 	get_option_int :: proc(po: ^pcap_options, pon: pcap_option_name) -> _c.int ---
 }
-
-// TODO: Move to its own file, might as well one to one the entire library
-@(default_calling_convention = "c")
-foreign _ {
-	@(link_name = "bpf_filter")
-	bpf_filter :: proc(pc: ^bpf_insn, pkt: [^]byte, wirelen: _c.uint32_t, buflen: _c.uint32_t) -> _c.uint32_t ---
-
-	@(link_name = "bpf_validate")
-	bpf_validate :: proc(fcode: ^bpf_insn, flen: _c.int) -> _c.int ---
-
-	@(link_name = "bpf_image")
-	bpf_image :: proc(pc: ^bpf_insn, arg: _c.int) -> cstring ---
-
-	@(link_name = "bpf_dump")
-	bpf_dump :: proc(p: ^bpf_program, arg: _c.int) ---
-}
