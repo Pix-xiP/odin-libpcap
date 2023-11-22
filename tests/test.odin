@@ -2,9 +2,9 @@ package libpcap_tests
 
 // Will require sudo / root / admin privs in most cases to connect to an interface
 import pcap "../"
-import "core:os"
-import "core:net"
 import "core:fmt"
+import "core:net"
+import "core:os"
 import "core:strings"
 import _t "core:testing"
 
@@ -24,7 +24,7 @@ basic_find_devs :: proc(t: ^_t.T) {
 	for i := interfaces; i != nil; i = i.next {
 		fmt.printf("Interface: %s - ", i.name)
 		for a := i.addresses; a != nil; a = a.next {
-			if a.addr.family == os.AF_INET {
+			if cast(int)a.addr.sa_family == os.AF_INET {
 				sock_in := cast(^os.sockaddr_in)a.addr
 				ip4 := net.IP4_Address(transmute([4]u8)sock_in.sin_addr.s_addr)
 				fmt.printf(ntoa(ip4))

@@ -1,8 +1,8 @@
 package odin_libpcap
 
-import "core:os"
 import _c "core:c"
 import "core:c/libc"
+import "core:os"
 
 // TODO: Add a when for each system - Linux, Windows etc.
 when ODIN_OS == .Windows {
@@ -10,7 +10,7 @@ when ODIN_OS == .Windows {
 	foreign import libpcap "system:npcap" // 99% sure this is wrong, but placeholder
 }
 when ODIN_OS == .Linux {
-	foreign import libpcap "libpcap" // TODO: Put on a linux VM and check if .a needed
+	foreign import libpcap "system:pcap"
 }
 when ODIN_OS == .Darwin {
 	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
