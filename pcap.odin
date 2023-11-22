@@ -15,6 +15,7 @@ when ODIN_OS == .Linux {
 when ODIN_OS == .Darwin {
 	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
 	foreign import libpcap "system:libpcap.A.dylib"
+	// foreign import libpcap "system:pcap"
 }
 
 #assert(size_of(b32) == size_of(_c.int)) // To Use later maybe for wrappers!
