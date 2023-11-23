@@ -102,6 +102,7 @@ addr :: struct {
 // PCAP_ERROR_CANTSET_TSTAMP_TYPE :: -10 // this device doesn't support setting the time stamp type 
 // PCAP_ERROR_PROMISC_PERM_DENIED :: -11 // you don't have permission to capture in promiscuous mode 
 // PCAP_ERROR_TSTAMP_PRECISION_NOTSUP :: -12 // the requested time stamp precision is not supported 
+OKAY :: 1
 
 ERRORS :: enum _c.int {
 	GENERIC                 = -1, // generic error code 
