@@ -49,7 +49,9 @@ bpf_insn :: struct {
 @(default_calling_convention = "c", link_prefix = "bpf_")
 foreign bpf {
 	filter :: proc(pc: ^bpf_insn, pkt: [^]byte, wirelen: _c.uint32_t, buflen: _c.uint32_t) -> _c.uint32_t ---
+
 	validate :: proc(fcode: ^bpf_insn, flen: _c.int) -> _c.int ---
+
 	image :: proc(pc: ^bpf_insn, arg: _c.int) -> cstring ---
 	// Needs to be tagged cause clash with pcap_dump. 
 	bpf_dump :: proc(p: ^bpf_program, arg: _c.int) ---
