@@ -20,3 +20,7 @@ Everything should be converted from the standard libpcap headers. Not everything
 - [x] vlan.odin
 
 Tests inside tests/... will be expanded upon to clear everything as I get time..
+
+## Notes:
+
+I have not added the function attrs to each to show which func is available where - I don't plan to but if someone wants to go through and add decorators etc, I'm happy to merge
