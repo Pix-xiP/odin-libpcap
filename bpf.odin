@@ -7,11 +7,11 @@ when ODIN_OS == .Windows {
 	foreign import bpf "system:npcap" // 99% sure this is wrong, but placeholder
 }
 when ODIN_OS == .Linux {
-	foreign import bpf "libpcap" // TODO: Put on a linux VM and check if .a needed
+	foreign import bpf "pcap"
 }
 when ODIN_OS == .Darwin {
 	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
-	foreign import bpf "system:libpcap.A.dylib"
+	foreign import bpf "system:pcap"
 }
 
 BPF_RELEASE :: 199606 // BSD style release dat.
@@ -54,7 +54,7 @@ foreign bpf {
 
 	image :: proc(pc: ^bpf_insn, arg: _c.int) -> cstring ---
 	// Needs to be tagged cause clash with pcap_dump. 
-	bpf_dump :: proc(p: ^bpf_program, arg: _c.int) ---
+	_dump :: proc(p: ^bpf_program, arg: _c.int) ---
 }
 
 // The upper 8 bits of the opcode aren't used. BSD/OS used 0x8000.
@@ -64,6 +64,7 @@ foreign bpf {
 BPF_CLASS :: proc(code: uint) -> uint {
 	return (code) & 0x07
 }
+
 BPF_LD :: 0x00
 BPF_LDX :: 0x01
 BPF_ST :: 0x02

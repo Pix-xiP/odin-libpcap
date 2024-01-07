@@ -26,11 +26,13 @@ ssl2_header :: struct {
 	sll2_addr:         [SLL_ADDRLEN]_c.uint8_t, // link-layer address 
 }
 
-LINUX_SLL_HOST :: 0
-LINUX_SLL_BROADCAST :: 1
-LINUX_SLL_MULTICAST :: 2
-LINUX_SSL_OTHERHOST :: 3
-LINUX_SSL_OUTGOING :: 4
+LINUX_SSL :: enum _c.int {
+	HOST      = 0,
+	BROADCAST = 1,
+	MULTICAST = 2,
+	OTHERHOST = 3,
+	OUTGOING  = 4,
+}
 
 LINUX_SLL_P_802_3 :: 0x0001 //  Novell 802.3 frames without 802.2 LLC header */
 LINUX_SLL_P_802_2 :: 0x0004 //  802.2 frames (not D/I/X Ethernet) */

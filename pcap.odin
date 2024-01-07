@@ -109,7 +109,7 @@ ERRORS :: enum _c.int {
 // PCAP_WARNING :: 1 // Generic warning code 
 // PCAP_WARNING_PROMISC_NOTSUP :: 2 // device doesn't support promisc mode 
 // PCAP_WARNING_TSTAMP_TYPE_NOTSUP :: 3 // timestype type is not supported
-WARNING :: enum i32 {
+WARNING :: enum _c.int {
 	GENERIC            = 1,
 	PROMISC_NOTSUP     = 2,
 	TSTAMP_TYPE_NOTSUP = 3,
