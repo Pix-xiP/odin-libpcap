@@ -87,21 +87,6 @@ addr :: struct {
 	dstaddr:   ^os.SOCKADDR,
 }
 
-// Error codes for PCAP API 
-// All negative cause #C things, success or fail on calls.
-// check if return < 0 
-// PCAP_ERROR :: -1 // generic error code 
-// PCAP_ERROR_BREAK :: -2 // loop terminated by pcap_breakloop 
-// PCAP_ERROR_NOT_ACTIVATED :: -3 // the capture needs to be activated 
-// PCAP_ERROR_ACTIVATED :: -4 // the operation can't be performed on already activated captures 
-// PCAP_ERROR_NO_SUCH_DEVICE :: -5 // no such device exists 
-// PCAP_ERROR_RFMON_NOTSUP :: -6 // this device doesn't support rfmon (monitor) mode 
-// PCAP_ERROR_NOT_RFMON :: -7 // operation supported only in monitor mode 
-// PCAP_ERROR_PERM_DENIED :: -8 // no permission to open the device 
-// PCAP_ERROR_IFACE_NOT_UP :: -9 // interface isn't up 
-// PCAP_ERROR_CANTSET_TSTAMP_TYPE :: -10 // this device doesn't support setting the time stamp type 
-// PCAP_ERROR_PROMISC_PERM_DENIED :: -11 // you don't have permission to capture in promiscuous mode 
-// PCAP_ERROR_TSTAMP_PRECISION_NOTSUP :: -12 // the requested time stamp precision is not supported 
 OKAY :: 1
 
 ERRORS :: enum _c.int {
