@@ -1,6 +1,5 @@
 package odin_libpcap
 
-
 DLT_NULL :: 0
 DLT_EN10MB :: 1
 DLT_EN3MB :: 2
@@ -29,7 +28,6 @@ when ODIN_OS == .FreeBSD {
 	DLT_SLIP_BSDOS :: 15
 	DLT_PPP_BSDOS :: 16
 }
-
 
 when ODIN_OS == .OpenBSD || ODIN_OS == .Darwin {
 	DLT_PFSYNC :: 18

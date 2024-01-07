@@ -9,16 +9,17 @@ when ODIN_OS == .Windows {
 	foreign import namedb "system:npcap" // 99% sure this is wrong, but placeholder
 }
 when ODIN_OS == .Linux {
-	foreign import namedb "pcap"
+	foreign import namedb "system:pcap"
 }
 when ODIN_OS == .Darwin {
-	foreign import namedb "pcap"
+	foreign import namedb "system:pcap"
 }
 
 pcap_etherent :: struct {
 	addr: [6]_c.uchar,
 	name: [122]_c.char,
 }
+// TODO: Check for this in Core?
 addrinfo :: struct {
 	ai_flags:     _c.int, //AI_PASSIVE, AI_CANONNAME 
 	ai_family:    _c.int, // PF_xxx

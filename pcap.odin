@@ -4,8 +4,8 @@ import _c "core:c"
 import "core:c/libc"
 import "core:os"
 
-// TODO: Add a when for each system - Linux, Windows etc.
 when ODIN_OS == .Windows {
+	//TODO: Actually get windows VM to test.
 	// WinPcap, NPcap are the options here.
 	foreign import libpcap "system:npcap" // 99% sure this is wrong, but placeholder
 }
@@ -42,13 +42,13 @@ file_header :: struct {
 
 // TODO: LT_LINKTYPE macros to.. procs?
 
-direction_t :: enum i32 {
+direction_t :: enum _c.int {
 	INOUT = 0,
 	IN,
 	OUT,
 }
 
-option_name :: enum i32 {
+option_name :: enum _c.int {
 	TSTAMP_PRECISION = 1,
 	IO_READ_PLUGIN   = 2,
 	IO_WRITE_PLUGIN  = 3,

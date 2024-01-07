@@ -7,10 +7,9 @@ when ODIN_OS == .Windows {
 	foreign import bpf "system:npcap" // 99% sure this is wrong, but placeholder
 }
 when ODIN_OS == .Linux {
-	foreign import bpf "pcap"
+	foreign import bpf "system:pcap"
 }
 when ODIN_OS == .Darwin {
-	// HACK: Ran into issues with it finding the dylib, so moved it into the folder..
 	foreign import bpf "system:pcap"
 }
 
