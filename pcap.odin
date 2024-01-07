@@ -90,7 +90,7 @@ addr :: struct {
 OKAY :: 1
 
 ERRORS :: enum _c.int {
-	GENERIC                 = -1, // generic error code 
+	GENERIC                 = -1, // generic error code // PCAP_ERROR
 	BREAK                   = -2, // loop terminated by pcap_breakloop 
 	NOT_ACTIVATED           = -3, // the capture needs to be activated 
 	ACTIVATED               = -4, // the operation can't be performed on already activated captures 
